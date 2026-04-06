@@ -9,3 +9,4 @@ from langfuse.client import Langfuse
 load_dotenv()
 
 def escalation_function(discord_message): 
+  print(discord_message )
