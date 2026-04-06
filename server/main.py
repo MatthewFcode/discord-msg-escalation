@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from dotenv import load_dotenv
 from pydantic import BaseModel # class from pydantic that validates data and parses JSON into python objects 
+from escalation import escalation_function
 
 app = FastAPI()
 
@@ -13,9 +14,12 @@ class DiscordMessage(BaseModel): #validates request comes in this shape and pars
     guild: str
     guild_id: str
     timestamp: str
+    
 
 @app.post("/api/v1/bot")
-async def escalation_function(data: DiscordRequest):
+async def escalation(data: DiscordMessage):
+    result = escalation_function(data)
+    print(result)
 
 
 
