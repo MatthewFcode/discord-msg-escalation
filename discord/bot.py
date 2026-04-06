@@ -1,8 +1,8 @@
 # bot.py
-import discord
-import httpx
-import os
-from dotenv import load_dotenv
+import discord #listening to discord events
+import httpx #http request library
+import os #accessing env vars
+from dotenv import load_dotenv #loads the .env file
 
 load_dotenv()
 
@@ -11,14 +11,14 @@ API_SECRET = os.getenv("API_SECRET")
 API_URL = "http://localhost:8000/api/v1/bot"
 
 intents = discord.Intents.default()
-intents.message_content = True
-intents.guilds = True
+intents.message_content = True #reading messages
+intents.guilds = True #accessing server info
 
-client = discord.Client(intents=intents)
+client = discord.Client(intents=intents) # discord client
 
 @client.event
 async def on_ready():
-    print(f"Logged in as {client.user} — watching {len(client.guilds)} server(s)")
+    print(f"Logged in as {client.user} — watching {len(client.guilds)} server(s)") #when the bot connects on start up it logs the bot name and what servers it is in 
 
 @client.event
 async def on_message(message):
@@ -49,4 +49,4 @@ async def on_message(message):
     except Exception as e:
         print(f"Failed to forward message: {e}")
 
-client.run(DISCORD_TOKEN)
+client.run(DISCORD_TOKEN) #running the bot and keeping it alive 
