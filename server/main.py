@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI, HTTPException, Header
 from dotenv import load_dotenv
 from pydantic import BaseModel # class from pydantic that validates data and parses JSON into python objects 
-#from escalation import escalation_function
+from escalation import escalation_function
 
 load_dotenv()
 
@@ -24,8 +24,9 @@ class DiscordMessage(BaseModel): #validates request comes in this shape and pars
 async def escalation(data: DiscordMessage, x_secret: str = Header(None)):
     if x_secret != API_SECRET:
         raise HTTPException(status_code=401, detail="Unauthorized")
-    #result = escalation_function(data)
-    print(data)
+    #calling the activation function
+    result = escalation_function(data)
+    print(result)
 
 
 

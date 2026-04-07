@@ -5,7 +5,9 @@ import resend
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.tools import tool
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langfuse.client import Langfuse 
+from langfuse import Langfuse 
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from dotenv import load_dotenv
 
 
@@ -26,23 +28,29 @@ langfuse = Langfuse (
 
 @tool
 def send_escalation_email(subject: str, body: str): 
-  #resend api key 
+  """Send an email to Matthew detailing the message"""
   resend.api_key = os.environ["RESEND_API_KEY"]
 
   r = resend.Emails.send({
-    "from": "AI-Assistant <onboarding@resend.dev>", # Use your verified domain in prod
-        "to": ["matthew@example.com"],
+    "from": "Discord AI <onboarding@resend.dev>", # Use your verified domain in prod
+        "to": ["matthewfoley333@gmail.com"],
         "subject": subject,
         "html": f"<p>{body}</p>"
   })
 
   return f"Email sent successfully: {r['id']}"
 
+#AI escalation function 
 def escalation_function(discord_message): 
+  utc_time = datetime.fromisoformat(discord_message.timestamp)
+  nz_time = utc_time.astimezone(ZoneInfo("Pacific/Auckland"))
+
+  formatted_time = nz_time.strftime("%Y-%m-%d %H:%M:%S")
+
 
   trace = langfuse.trace(
     name = 'dicord-escalation',
-    discord_message = discord_message 
+    discord_message = discord_message.content
   )
 
   start_latency = time.time()
@@ -52,8 +60,15 @@ def escalation_function(discord_message):
   model_with_tools = model.bind_tools(tools)
 
   messages = [
-    SystemMessage(content=f"""You are a message escalation checker. Any important messages need to be escalated to Matthew."""), 
-    HumanMessage(content=discord_message)
+    SystemMessage(content=f"""You are a message escalation checker.
+Only escalate messages that are important.
+If not important, do nothing and return a message saying 'No escalation needed'."""), 
+    HumanMessage(content=f"""Discord message received: 
+                 Content: {discord_message.content}
+                 Author: {discord_message.author}
+                 Channel: {discord_message.channel}
+                 Server: {discord_message.guild}
+                 Time sent: {formatted_time}""")
   ]
   
   
