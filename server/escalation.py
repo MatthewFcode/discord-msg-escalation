@@ -29,12 +29,14 @@ def send_escalation_email(subject: str, body: str):
   #resend api key 
   resend.api_key = os.environ["RESEND_API_KEY"]
 
-  r = resend.Emails.send(
+  r = resend.Emails.send({
     "from": "AI-Assistant <onboarding@resend.dev>", # Use your verified domain in prod
         "to": ["matthew@example.com"],
         "subject": subject,
         "html": f"<p>{body}</p>"
-  )
+  })
+
+  return f"Email sent successfully: {r['id']}"
 
 def escalation_function(discord_message): 
 
@@ -45,14 +47,30 @@ def escalation_function(discord_message):
 
   start_latency = time.time()
 
+  tools = [send_escalation_email]
+
+  model_with_tools = model.bind_tools(tools)
+
   messages = [
     SystemMessage(content=f"""You are a message escalation checker. Any important messages need to be escalated to Matthew."""), 
     HumanMessage(content=discord_message)
   ]
   
-  end_latency = int((time.time() - start_latency) * 1000)
+  
 
-  result = model.invoke(messages)
+  result = model_with_tools.invoke(messages)
+
+  if result.tool_calls:
+        for tool_call in result.tool_calls:
+            # This is where the magic happens:
+            # We take the AI's suggested arguments and pass them to your Python function
+            tool_output = send_escalation_email.invoke(tool_call["args"])
+            print(f"Tool executed: {tool_output}")
+            
+            # Update trace with the tool activity
+            trace.update(metadata={"tool_used": tool_call["name"], "tool_output": tool_output})
+
+  end_latency = int((time.time() - start_latency) * 1000)
 
   trace.update(
     output= result.content,
