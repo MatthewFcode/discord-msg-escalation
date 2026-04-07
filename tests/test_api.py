@@ -1,13 +1,27 @@
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 import os
 import sys
 
-# Add the server directory to sys.path to allow importing main and escalation
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "server")))
+# Mock external dependencies BEFORE importing the app
+# This prevents ModuleNotFoundError if these aren't installed in the test env
+sys.modules["resend"] = MagicMock()
+sys.modules["langfuse"] = MagicMock()
+sys.modules["langchain_core"] = MagicMock()
+sys.modules["langchain_core.messages"] = MagicMock()
+sys.modules["langchain_core.tools"] = MagicMock()
+sys.modules["langchain_google_genai"] = MagicMock()
+sys.modules["google.generativeai"] = MagicMock()
+sys.modules["zoneinfo"] = MagicMock() # ZoneInfo is built-in but just in case of version mismatch
 
-from main import app
+# Add the root directory AND server directory to sys.path
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+server_dir = os.path.join(root_dir, "server")
+sys.path.append(root_dir)
+sys.path.append(server_dir)
+
+from server.main import app
 
 client = TestClient(app)
 
@@ -27,7 +41,8 @@ def test_escalation_endpoint_success():
         "timestamp": "2023-10-27T10:00:00+00:00"
     }
     
-    with patch("main.escalation_function") as mock_escalation:
+    # We mock the function inside main.py
+    with patch("server.main.escalation_function") as mock_escalation:
         mock_escalation.return_value = "Mocked Result"
         
         response = client.post(

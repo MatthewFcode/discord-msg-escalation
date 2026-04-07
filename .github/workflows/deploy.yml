@@ -28,13 +28,13 @@ jobs:
       - name: Run tests
         run: |
           # Use pytest to run the tests
-          # We might need to set up dummy environment variables for tests
           export API_SECRET=test_secret
           export GOOGLE_API_KEY=dummy
           export LANGFUSE_PUBLIC_KEY=dummy
           export LANGFUSE_SECRET_KEY=dummy
           export LANGFUSE_BASE_URL=dummy
           export RESEND_API_KEY=dummy
+          export PYTHONPATH=$PYTHONPATH:.
           pytest tests/test_api.py
 
   deploy:
