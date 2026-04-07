@@ -8,7 +8,7 @@ load_dotenv()
 
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 API_SECRET = os.getenv("API_SECRET")
-API_URL = "http://localhost:8000/api/v1/bot"
+API_URL = os.getenv("API_URL", "http://localhost:8000/api/v1/bot")
 
 intents = discord.Intents.default()
 intents.message_content = True #reading messages
