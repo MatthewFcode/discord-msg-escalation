@@ -22,10 +22,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Ensure start.sh is executable
-RUN chmod +x start.sh
+#RUN chmod +x start.sh
 
 # Expose port (Dokku uses PORT env var, but 8000 is a common default)
 EXPOSE 8000
 
 # Run the startup script
-CMD ["./start.sh"]
+#CMD ["./start.sh"]
