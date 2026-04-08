@@ -19,6 +19,9 @@ class DiscordMessage(BaseModel): #validates request comes in this shape and pars
     guild_id: str
     timestamp: str
 
+@app.get("/")
+def root():
+    return {"status": "ok"}
 
 @app.post("/api/v1/bot")
 async def escalation(data: DiscordMessage, x_secret: str = Header(None)):
