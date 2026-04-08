@@ -47,6 +47,6 @@ async def on_message(message):
             )
             response.raise_for_status()
     except Exception as e:
-        print(f"Failed to forward message: {e}")
+        print(f"Failed to forward message: {type(e).__name__}: {e}")
 
 client.run(DISCORD_TOKEN) #running the bot and keeping it alive 
