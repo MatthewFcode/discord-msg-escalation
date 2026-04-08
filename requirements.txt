@@ -35,7 +35,7 @@ jsonpatch==1.33
 jsonpointer==3.0.0
 langchain-core==0.3.83
 langchain-google-genai==2.1.12
-langfuse==3.7.0
+langfuse==2.60.0
 langsmith==0.4.37
 multidict==6.7.1
 opentelemetry-api==1.40.0
@@ -45,7 +45,7 @@ opentelemetry-proto==1.40.0
 opentelemetry-sdk==1.40.0
 opentelemetry-semantic-conventions==0.61b0
 orjson==3.11.5
-packaging==25.0
+packaging==24.2
 pluggy==1.6.0
 propcache==0.4.1
 proto-plus==1.27.2
